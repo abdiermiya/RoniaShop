@@ -20,16 +20,20 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Install Android SDK tools
+      - name: Accept Android licenses
         run: |
           yes | sdkmanager --licenses || true
+
+      - name: Install Android SDK
+        run: |
           sdkmanager "platform-tools"
           sdkmanager "platforms;android-35"
           sdkmanager "build-tools;35.0.0"
+          sdkmanager "build-tools;37.0.0"
 
-      - name: Find AIDL
+      - name: Check AIDL
         run: |
-          echo "ANDROID_HOME=$ANDROID_HOME"
+          echo "Android SDK: $ANDROID_HOME"
           find "$ANDROID_HOME" -name aidl -type f
           find "$ANDROID_HOME" -name aidl -type f -exec chmod +x {} \;
 
@@ -46,8 +50,7 @@ jobs:
 
       - name: Build APK
         run: |
-          export PATH="$ANDROID_HOME/build-tools/35.0.0:$PATH"
-          export PATH="$ANDROID_HOME/platform-tools:$PATH"
+          export PATH="$ANDROID_HOME/build-tools/37.0.0:$ANDROID_HOME/platform-tools:$PATH"
           buildozer android debug
 
       - name: Upload APK
